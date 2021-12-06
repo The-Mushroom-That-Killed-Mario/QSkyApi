@@ -117,7 +117,7 @@ public class Branch extends Element {
      * Instantiates a new domain. The domain will be of the same state like the parent domain.
      *
      * @param parent the parent domain
-     * @see Domain#createRoot()
+//     * @see Domain#createRoot()
      */
     public Branch(final Branch parent) {
         if (parent == null) {

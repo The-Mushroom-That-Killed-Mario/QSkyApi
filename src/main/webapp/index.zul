@@ -6,7 +6,7 @@
         
 
         
-        <window xmlns:cl="client" title="QMS Apertum-QSystem" border="normal" width="550px" height="300px"
+        <window xmlns:cl="client" title="QMS Apertum-QSystem" border="normal" width="600px" height="500px"
                 apply="org.zkoss.bind.BindComposer" 
                 viewModel="@id('vm') @init('ru.apertum.qsky.web.UserLoginForm')" 
                 validationMessages="@id('vmsgs')"
@@ -18,7 +18,7 @@
                 <hbox  style="position: relative; right: 10; top: 0px; margin:0px 0px 0px 0px; float:right;">
                     <label value="${c:l('language')}" class="boxlangs" />
                     <image  src="@load(('/resources/img/flags/').concat(vm.lang.code).concat('.png'))" />
-                    <combobox id="cmbColor" autodrop="true" readonly="true" width="100px" model="@load(vm.langs)" onChange="@command('changeLang')" selectedItem="@bind(vm.lang)">
+                    <combobox id="cmbColor" autodrop="true" readonly="true" width="150px" model="@load(vm.langs)" onChange="@command('changeLang')" selectedItem="@bind(vm.lang)">
                         <template name="model">
                             <comboitem label="@load(each.name)" image="@load(('/resources/img/flags/').concat(each.code).concat('.png'))" />
                         </template>
@@ -27,7 +27,7 @@
             </div>
             <label value= "${c:l('login_label')}"  style="font-size: 16pt;"/>
         
-            <grid width="70%">
+            <grid width="80%">
                 <columns>
                     <column label="${c:l('login_data')}" width="30%"/>
                     <column label="${c:l('login_enter')}"/>
