@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration name="qskyapi" monitorInterval="600">
+    <Properties>
+        <property name="app-name">qskyapi</property>
+        <property name="file-name">${app-name}</property>
+        <property name="logs-dir">logs</property>
+        <property name="arch-dir">${logs-dir}/archive</property>
+        <property name="log-size">10MB</property>
+        <property name="archive-count">10</property>
+
+        <Property name="pattern-console">%t[%p{length=1}] %m%n</Property>
+        <Property name="pattern-console-dev">%date{dd.MM.yy HH:mm.ss_SSS}[%p{length=1}] %m at %l%n</Property>
+        <Property name="pattern-file">%date{dd.MM.yy HH:mm.ss_SSS} %t[%p{length=1}] %m%n</Property>
+    </Properties>
+
+    <Appenders>
+        <Console name="console-dev" target="SYSTEM_OUT">
+            <PatternLayout pattern="${pattern-console-dev}" charset="${main:1}"/>
+        </Console>
+
+
+        <RollingFile name="file-dev" append="true"
+                     fileName="${logs-dir}/${file-name}.log"
+                     filePattern="${arch-dir}/${file-name}-%i.log.zip">
+
+            <ThresholdFilter level="TRACE" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="${pattern-file}" charset="UTF-8"/>
+
+            <Policies>
+                <SizeBasedTriggeringPolicy size="${log-size}"/>
+            </Policies>
+            <DefaultRolloverStrategy min="1" max="${archive-count}" fileIndex="min" compressionLevel="9"/>
+        </RollingFile>
+
+    </Appenders>
+
+    <Loggers>
+
+        <Logger name="qsysprereg" level="trace" additivity="false">
+            <AppenderRef ref="console-dev"/>
+            <AppenderRef ref="file-dev"/>
+        </Logger>
+
+        <Root level="trace">
+            <AppenderRef ref="console-dev"/>
+            <AppenderRef ref="file-dev"/>
+        </Root>
+    </Loggers>
+</Configuration>

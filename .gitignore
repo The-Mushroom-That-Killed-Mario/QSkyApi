@@ -1,0 +1,10 @@
+syntax: glob
+dist/*
+# build/*
+lib/zk/*
+# Default ignored files
+.idea/workspace.xml
+.idea/*
+.gradle/*
+/*.war
+/*.zip

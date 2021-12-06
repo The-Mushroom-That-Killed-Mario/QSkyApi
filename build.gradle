@@ -1,0 +1,156 @@
+plugins {
+    id 'idea'
+    id 'java'
+    id 'war'
+    id "org.gretty" version "2.3.1"
+    id 'project-report'
+}
+
+
+gretty {
+    httpPort = 8084
+    contextPath = '/qskyapi'
+    servletContainer = 'jetty9.4' //jetty7, jetty8, jetty9, jetty9.3, jetty9.4
+
+}
+
+// In this section you declare where to find the dependencies of your project
+repositories {
+    maven {
+//	credentials { /*e.g. defined in ~/.gradle/gradle.properties*/
+//		username mavenUser
+//		password mavenPassword
+//	}
+        url "https://maven.zkoss.org/repo/zk/pe" //ZK-PE repo requires login
+//		url "https://maven.zkoss.org/repo/zk/ee" //ZK-EE repo requires login
+    }
+    maven { url "https://mavensync.zkoss.org/maven2" }
+    maven { url "https://mavensync.zkoss.org/eval" }
+    maven { url "https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts/" } //for jasper reports
+    mavenCentral()
+    jcenter() //for gretty
+}
+
+sourceSets {
+    jettyRunner {
+        runtimeClasspath += sourceSets.main.runtimeClasspath
+    }
+}
+
+group 'ru.apertum.qsystem'
+version '6.0'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+compileJava.options.encoding = "UTF-8"
+compileTestJava.options.encoding = "UTF-8"
+
+wrapper {
+    gradleVersion = '5.6.2' // Желаемая версия
+}
+
+war {
+    entryCompression ZipEntryCompression.STORED
+}
+
+war.doLast {
+    println("Copy artefact from \"${buildDir}\\libs\\" + archivesBaseName + '-' + version + ".war" + "\" to : ${buildDir}\\..\\")
+    ant.copy file: "${buildDir}/libs/" + archivesBaseName + '-' + version + '.war', todir: "${buildDir}/../"
+}
+
+dependencies {
+    implementation fileTree(dir: 'lib/zk', include: '**/*.jar')
+    providedCompile fileTree(dir: 'lib/provided', include: '**/*.jar')
+
+    /* Закоментировать при использовании лицэнлии */
+    implementation "org.zkoss.zk:zk:${zkVersion}"
+    implementation "org.zkoss.zk:zkbind:${zkVersion}"
+    implementation "org.zkoss.zk:zkex:${zkVersion}"    //ZK PE
+    implementation "org.zkoss.zk:zkmax:${zkVersion}"   //ZK EE
+    implementation "org.zkoss.zk:zuti:${zkVersion}"    /*optional enable for shadow elements support */
+//	implementation "org.zkoss.zk:zhtml:${zkVersion}"   /*optional enable for xhtml component support */
+//	implementation "org.zkoss.zk:zkplus:${zkVersion}"  /*optional enable for 3rd party framework integration support */
+
+    implementation "commons-io:commons-io:${commonsIoVersion}"
+
+    testImplementation "org.zkoss.zats:zats-mimic-ext7:${zatsVersion}"
+
+    testImplementation "junit:junit:${junitVersion}"
+
+    jettyRunnerRuntimeOnly "org.eclipse.jetty:jetty-runner:${jettyVersion}"
+    jettyRunnerRuntimeOnly "javax.websocket:javax.websocket-api:${websocketApiVersion}"
+    jettyRunnerRuntimeOnly "org.eclipse.jetty.websocket:javax-websocket-server-impl:${jettyVersion}"
+
+    compile(group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.1') { transitive = false }
+    compile(group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.1') { transitive = false }
+
+    compile(group: 'org.dom4j', name: 'dom4j', version: '2.1.1') { transitive = false }
+
+    compile(group: 'commons-logging', name: 'commons-logging', version: '1.2') { transitive = false }
+    compile(group: 'commons-pool', name: 'commons-pool', version: '1.6') { transitive = false }
+    compile(group: 'org.apache.commons', name: 'commons-lang3', version: '3.9') { transitive = false }
+    compile(group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.3') { transitive = false }
+    compile(group: 'commons-digester', name: 'commons-digester', version: '2.1') { transitive = false }
+    compile(group: 'commons-dbcp', name: 'commons-dbcp', version: '1.4') { transitive = false }
+    compile(group: 'org.apache.commons', name: 'commons-configuration2', version: '2.2') { transitive = false }
+
+    compile(group: 'mysql', name: 'mysql-connector-java', version: '8.0.17') { transitive = false }
+    compile(group: 'com.h2database', name: 'h2', version: '1.4.197') { transitive = false }
+
+    compile(group: 'org.hibernate', name: 'hibernate-c3p0', version: '5.4.3.Final') {
+        transitive = true
+        exclude group: 'dom4j'
+        exclude module: 'javassist'
+        exclude module: 'commons-collections'
+        exclude module: 'persistence-api'
+        exclude group: 'org.slf4j'
+    }
+    compile(group: 'org.hibernate', name: 'hibernate-core', version: '5.4.3.Final') {
+        transitive = true
+        exclude group: 'dom4j'
+        exclude module: 'javassist'
+        exclude module: 'commons-collections'
+        exclude module: 'persistence-api'
+        exclude group: 'org.slf4j'
+    }
+    //compile(group: 'org.hibernate.javax.persistence', name: 'hibernate-jpa-2.1-api', version: '1.0.2.Final') { transitive = false }
+
+    // https://mvnrepository.com/artifact/org.hibernate/hibernate-validator
+    compile(group: 'org.hibernate', name: 'hibernate-validator', version: '5.4.3.Final') {
+        transitive = true
+        exclude group: 'dom4j'
+        exclude module: 'javassist'
+        exclude module: 'commons-collections'
+        exclude module: 'persistence-api'
+        exclude group: 'org.slf4j'
+    }
+
+    // https://mvnrepository.com/artifact/javax.annotation/javax.annotation-api
+    //compile group: 'javax.annotation', name: 'javax.annotation-api', version: '1.3.2'
+
+    // https://mvnrepository.com/artifact/javax.ejb/javax.ejb-api
+    //compile group: 'javax.ejb', name: 'javax.ejb-api', version: '3.2.2'
+
+    // https://mvnrepository.com/artifact/javax.persistence/javax.persistence-api
+    //compile group: 'javax.persistence', name: 'javax.persistence-api', version: '2.2'
+
+    // https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api
+    //providedCompile group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
+
+    // https://mvnrepository.com/artifact/javax.servlet.jsp/javax.servlet.jsp-api
+    //providedCompile group: 'javax.servlet.jsp', name: 'javax.servlet.jsp-api', version: '2.3.3'
+
+    // https://mvnrepository.com/artifact/javax/javaee-api
+    providedCompile group: 'javax', name: 'javaee-api', version: '8.0.1'
+
+
+}
+
+//launch Jetty using jetty-runner
+task startJettyRunner(type: JavaExec) {
+    classpath = sourceSets.jettyRunner.runtimeClasspath
+    main 'org.eclipse.jetty.runner.Runner'
+    args '--path', "/${rootProject.name}", 'jetty-dev-context.xml'
+//	args '--path', "/${rootProject.name}", 'src/main/webapp'
+}
